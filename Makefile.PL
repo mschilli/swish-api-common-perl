@@ -25,7 +25,7 @@ if($version !~ /SWISH/) {
         print <<EOT;
 
      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     This module requires the SWISH library, available from 
+     This module requires SWISH-E, available from 
          http://swish-e.org/download/index.html
      Please download and install it prior to installing this module.
      Steps:

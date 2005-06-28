@@ -3,16 +3,81 @@
 ######################################################################
 
 NAME
-    SWISH::API::Common - blah blah blah
+    SWISH::API::Common - SWISH Document Indexing Made Easy
 
 SYNOPSIS
         use SWISH::API::Common;
 
-DESCRIPTION
-    SWISH::API::Common blah blah blah.
+        my $swish = SWISH::API::Common->new();
 
-EXAMPLES
-      $ perl -MSWISH::API::Common -le 'print $foo'
+            # Index all files in a directory and its subdirectories
+        $swish->index("/usr/local/share/doc");
+
+            # After indexing once (it's persistent), fire up as many
+            # queries as you like:
+
+            # Search documents containing both "swish" and "install"
+        for my $hit (@{$swish->search("swish AND install")}) {
+            print $hit->path(), "\n";
+        }
+
+DESCRIPTION
+    "SWISH::API::Common" offers an easy interface to the Swish index engine.
+    While SWISH::API offers a complete API, "SWISH::API::Common" focusses on
+    ease of use.
+
+    THIS MODULE IS CURRENTLY UNDER DEVELOPMENT. THE API MIGHT CHANGE AT ANY
+    TIME.
+
+    Currently, "SWISH::API::Common" just allows for indexing documents in a
+    single directory and any of its subdirectories.
+
+INSTALLATION
+    "SWISH::API::Common" requires "SWISH::API" and the swish engine to be
+    installed. Please download the latest release from
+
+        http://swish-e.org/distribution/swish-e-2.4.3.tar.gz
+
+    and untar it, type
+
+        ./configure
+        make
+        make install
+
+    and then install SWISH::API and SWISH::API::Common.
+
+  METHODS
+    $sw = SWISH::API::Common->new()
+        Constructor. Takes many options, but the defaults are usually fine.
+
+        Available options and their defaults:
+
+            swish_adm_dir   "$ENV{HOME}/.swish-common"
+            swish_exe       "swish-e"
+            swish_idx_file  "$self->{swish_adm_dir}/default.idx"
+            swish_cnf_file  "$self->{swish_adm_dir}/default.cnf"
+
+    $sw->index($dir)
+        Generate a new index of all text documents under directory $dir.
+
+    $sw->search("foo AND bar");
+        Searches the index, using the given search expression. Returns a
+        list hits, which can be asked for their path:
+
+                # Search documents containing 
+                # both "foo" and "bar"
+            for my $hit (@{$swish->search("foo AND bar")}) {
+                print $hit->path(), "\n";
+            }
+
+    index_remove
+        Permanently delete the current index.
+
+TODO List
+        * More than one index directory
+        * Remove documents from index
+        * determine /usr/bin/perl line in streamer generally
+        * Iterator for search hits
 
 LEGALESE
     Copyright 2005 by Mike Schilli, all rights reserved. This program is

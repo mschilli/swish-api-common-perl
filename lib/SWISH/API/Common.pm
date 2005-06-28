@@ -156,7 +156,10 @@ EOT
     blurt <<EOT, $self->{streamer};
 #!/usr/bin/perl
 use SWISH::API::Common;
-SWISH::API::Common->new()->files_stream();
+SWISH::API::Common->new(
+        dirs_file    => '$self->{dirs_file}',
+        file_len_max => '$self->{file_len_max}',
+)->files_stream();
 EOT
 
     chmod 0755, $self->{streamer} or 
@@ -170,6 +173,8 @@ EOT
         ERROR "Indexing failed: $stdout $stderr";
         return undef;
     }
+
+    DEBUG "$stdout";
 
     1;
 }
