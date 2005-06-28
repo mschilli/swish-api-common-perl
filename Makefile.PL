@@ -18,3 +18,24 @@ WriteMakefile(
       (ABSTRACT_FROM => 'lib/SWISH/API/Common.pm',
        AUTHOR     => 'Mike Schilli <cpan@perlmeister.com>') : ()),
 );
+
+my $version = `swish-e -V`;
+
+if($version !~ /SWISH/) {
+        print <<EOT;
+
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     This module requires the SWISH library, available from 
+         http://swish-e.org/download/index.html
+     Please download and install it prior to installing this module.
+     Steps:
+         tar zxfv swish-e-2.4.x.tar.gz
+         cd swish-e-2.4.x
+         ./configure
+         make
+         make install
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOT
+
+exit 0;
+}
