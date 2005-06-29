@@ -22,7 +22,7 @@ WriteMakefile(
        AUTHOR     => 'Mike Schilli <cpan@perlmeister.com>') : ()),
 );
 
-my $version = `swish-f -V`;
+my $version = `swish-e -V`;
 
 if($version !~ /SWISH/) {
         print <<EOT;
