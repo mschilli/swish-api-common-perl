@@ -43,4 +43,4 @@ like($found, qr(canned/def), "boolean query");
 $found = join " ", map { $_->path } @found;
 like($found, qr(canned/abc), "simple query");
 
-#END { rmf "$CANNED/adm"; }
+END { rmf "$CANNED/adm"; }
