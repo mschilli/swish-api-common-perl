@@ -17,6 +17,7 @@ use File::Find;
 use File::Basename;
 use Log::Log4perl qw(:easy);
 use Sysadm::Install qw(:all);
+use File::Temp qw(tempfile);
 
 ###########################################
 sub new {
@@ -95,6 +96,15 @@ sub files_stream {
 
     my @dirs = split /,/, slurp $self->{dirs_file};
 
+    my @files = grep { -f } @dirs;
+       @dirs  = grep { ! -f } @dirs;
+
+    for(@files) {
+        $self->file_stream($_);
+    }
+
+    return unless @dirs;
+
     find(sub {
         return unless -f;
         return unless -T;
@@ -103,23 +113,34 @@ sub files_stream {
 
         DEBUG "Indexing $full";
 
-        open FILE, "<$_" or die;
-        my $rc = sysread FILE, my $data, $self->{file_len_max};
-
-        unless(defined $rc) {
-            WARN "Can't read $full: $!";
-            return;
-        }
-        close FILE;
-
-        my $size = length $data;
-
-        print "Path-Name: $full\n",
-              "Document-Type: TXT*\n",
-              "Content-Length: $size\n\n";
-        print $data;
-
+        $self->file_stream($full);
     }, @dirs);
+}
+
+############################################
+sub file_stream {
+############################################
+    my($self, $file) = @_;
+
+    if(! open FILE, "<$file") {
+        WARN "Cannot open $file";
+        return;
+    }
+
+    my $rc = sysread FILE, my $data, $self->{file_len_max};
+
+    unless(defined $rc) {
+        WARN "Can't read $file $!";
+        return;
+    }
+    close FILE;
+
+    my $size = length $data;
+
+    print "Path-Name: $file\n",
+          "Document-Type: TXT*\n",
+          "Content-Length: $size\n\n";
+    print $data;
 }
 
 ############################################
@@ -132,6 +153,34 @@ sub dir_prep {
     if(! -d $dir) {
         mkd($dir) unless -d $dir;
     }
+}
+
+############################################
+sub index_add {
+############################################
+    my($self, $dir) = @_;
+
+        # Index new doc in tmp idx file
+    my $old_idx_name = $self->{swish_idx_file};
+    (my $dummy, my $old_idx) = tempfile(CLEANUP => 1);
+    mv $old_idx_name, $old_idx;
+    mv "$old_idx_name.prop", "$old_idx.prop";
+
+    ($dummy, $self->{swish_idx_file}) = tempfile(CLEANUP => 1);
+    $self->index($dir);
+
+        # Merge two indices
+    my($stdout, $stderr, $rc) = tap($self->{swish_exe}, "-M",
+                                    $old_idx,
+                                    $self->{swish_idx_file},
+                                    $old_idx_name);
+
+    if($rc != 0) {
+        ERROR "Merging failed: $stdout $stderr";
+        return undef;
+    }
+
+    $self->{swish_idx_file} = $old_idx_name;
 }
 
 ############################################

@@ -6,9 +6,12 @@ version_from: lib/SWISH/API/Common.pm
 installdirs:  site
 requires:
     File::Basename:                0
+    File::Copy:                    0
     File::Find:                    0
     File::Path:                    0
+    File::Temp:                    0
     Log::Log4perl:                 0
+    LWP::Simple:                   0
     SWISH::API:                    0
     Sysadm::Install:               0
 

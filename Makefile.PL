@@ -13,13 +13,16 @@ WriteMakefile(
                         File::Path      => 0,
                         File::Find      => 0,
                         File::Basename  => 0,
+                        File::Temp      => 0,
+                        File::Copy      => 0,
+                        LWP::Simple     => 0,
                       }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/SWISH/API/Common.pm',
        AUTHOR     => 'Mike Schilli <cpan@perlmeister.com>') : ()),
 );
 
-my $version = `swish-e -V`;
+my $version = `swish-f -V`;
 
 if($version !~ /SWISH/) {
         print <<EOT;
@@ -34,8 +37,40 @@ if($version !~ /SWISH/) {
          ./configure
          make
          make install
+         cd perl
+         export LD_RUN_PATH=/usr/local/lib
+         perl Makefile.PL
+         make install
      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 EOT
+     my $build = ExtUtils::MakeMaker::prompt(
+         "Do you want me to download/build it for you ([y]/n)?", "y");
+     if($build =~ /y/) {
+         if($< != 0) {
+             print "You need to be root to do that.\n";
+             exit 0;
+         }
+         require File::Temp;
+         require File::Copy;
+         require LWP::Simple;
+         my $dir = File::Temp::tempdir(CLEANUP => 1);
+         chdir $dir or die "Cannot chdir to $dir";
+         my $distro = "swish-e-2.4.3.tar.gz";
+         (my $distrodir = $distro) =~ s/\.tar.\gz$//g;
+         print "Downloading $distro ...\n";
+#File::Copy::copy("/tmp/$distro", "$dir/$distro");
+         gestore("http://swish-e.org/distribution/$distro", $distro);
+         print "Done. Unpacking ...\n";
+         system("tar zxf $distro");
+         print "Done. Building ...\n";
+         system("cd $distrodir; ./configure; make; make install;");
+         system("cd $distrodir; cd perl; " .
+                "LD_RUN_PATH=/usr/local/lib; export LD_RUN_PATH; " .
+                "perl Makefile.PL; make install");
+         print "Done.\n";
+             # Step out of 
+         chdir "/";
+    }
 
-exit 0;
+    exit 0;
 }
