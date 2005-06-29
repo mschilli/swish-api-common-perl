@@ -14,6 +14,7 @@ our $VERSION = "0.01";
 use SWISH::API;
 use File::Path;
 use File::Find;
+use File::Spec;
 use File::Basename;
 use Log::Log4perl qw(:easy);
 use Sysadm::Install qw(:all);
@@ -31,11 +32,12 @@ sub new {
     };
 
     my $defaults = {
-        swish_idx_file => "$self->{swish_adm_dir}/default.idx",
-        swish_cnf_file => "$self->{swish_adm_dir}/default.cnf",
-        dirs_file      => "$self->{swish_adm_dir}/default.dirs",
-        streamer       => "$self->{swish_adm_dir}/default.streamer",
-        file_len_max   => 100_000,
+        swish_idx_file   => "$self->{swish_adm_dir}/default.idx",
+        swish_cnf_file   => "$self->{swish_adm_dir}/default.cnf",
+        swish_fuzzy_indexing_mode => "Stemming_en",
+        dirs_file        => "$self->{swish_adm_dir}/default.dirs",
+        streamer         => "$self->{swish_adm_dir}/default.streamer",
+        file_len_max     => 100_000,
     };
 
     for my $name (keys %$defaults) {
@@ -112,8 +114,8 @@ sub files_stream {
         my $full = $File::Find::name;
 
         DEBUG "Indexing $full";
+        $self->file_stream(File::Spec->rel2abs($_));
 
-        $self->file_stream($full);
     }, @dirs);
 }
 
@@ -123,7 +125,7 @@ sub file_stream {
     my($self, $file) = @_;
 
     if(! open FILE, "<$file") {
-        WARN "Cannot open $file";
+        WARN "Cannot open $file ($!)";
         return;
     }
 
@@ -197,7 +199,7 @@ sub index {
     blurt <<EOT, $self->{swish_cnf_file};
 IndexDir  $self->{streamer}
 IndexFile $self->{swish_idx_file}
-UseStemming Yes
+FuzzyIndexingMode $self->{swish_fuzzy_indexing_mode}
 EOT
 
         # Make a new streamer
@@ -353,6 +355,13 @@ Available options and their defaults:
 
         # Swish configuration file
     swish_cnf_file  "$self->{swish_adm_dir}/default.cnf"
+
+        # Maximum amount of data (in bytes) extracted
+        # from a single file
+    file_len_max 100_000
+
+        # SWISH Stemming
+    swish_fuzzy_indexing_mode => "Stemming_en"
 
 =item $sw-E<gt>index($dir)
 

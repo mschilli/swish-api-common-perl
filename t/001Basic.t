@@ -17,7 +17,10 @@ my $CANNED = "eg/canned";
 $CANNED = "../eg/canned" unless -d $CANNED;
 
 use SWISH::API::Common;
-my $sw = SWISH::API::Common->new(swish_adm_dir => "$CANNED/adm");
+my $sw = SWISH::API::Common->new(
+  swish_adm_dir             => "$CANNED/adm",
+  swish_fuzzy_indexing_mode => "NONE",
+);
 $sw->index($CANNED);
 
 my @found = $sw->search("mike");
@@ -33,4 +36,4 @@ $found = join " ", map { $_->path } @found;
 like($found, qr(canned/def), "and-or query");
 like($found, qr(canned/abc), "and-or query");
 
-END { rmf "$CANNED/adm"; }
+#END { rmf "$CANNED/adm"; }
