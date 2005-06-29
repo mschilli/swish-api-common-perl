@@ -203,7 +203,7 @@ EOT
         # Make a new streamer
     dir_prep($self->{streamer});
     blurt <<EOT, $self->{streamer};
-#!/usr/bin/perl
+#!$^X
 use SWISH::API::Common;
 SWISH::API::Common->new(
         dirs_file    => '$self->{dirs_file}',
@@ -216,7 +216,7 @@ EOT
 
     my($stdout, $stderr, $rc) = tap($self->{swish_exe}, "-c",
                                     $self->{swish_cnf_file},
-                                    "-S", "prog");
+                                    "-e", "-S", "prog");
 
     unless($stdout =~ /Indexing done!/) {
         ERROR "Indexing failed: $stdout $stderr";
@@ -295,7 +295,7 @@ SWISH::API::Common - SWISH Document Indexing Made Easy
         # queries as you like:
 
         # Search documents containing both "swish" and "install"
-    for my $hit (@{$swish->search("swish AND install")}) {
+    for my $hit ($swish->search("swish AND install")) {
         print $hit->path(), "\n";
     }
 
@@ -309,7 +309,8 @@ THIS MODULE IS CURRENTLY UNDER DEVELOPMENT. THE API MIGHT CHANGE AT ANY
 TIME.
 
 Currently, C<SWISH::API::Common> just allows for indexing documents
-in a single directory and any of its subdirectories.
+in a single directory and any of its subdirectories. Also, don't run
+index() and search() in parallel yet.
 
 =head1 INSTALLATION
 
@@ -324,7 +325,12 @@ and untar it, type
     make
     make install
 
-and then install SWISH::API and SWISH::API::Common.
+and then install SWISH::API which is contained in the distribution:
+
+    cd perl
+    perl Makefile.PL
+    make 
+    make install
 
 =head2 METHODS
 
@@ -336,9 +342,16 @@ Constructor. Takes many options, but the defaults are usually fine.
 
 Available options and their defaults:
 
+        # Where SWISH::API::Common stores index files etc.
     swish_adm_dir   "$ENV{HOME}/.swish-common"
+
+        # The path to swish-e, relative is OK
     swish_exe       "swish-e"
+
+        # Swish index file
     swish_idx_file  "$self->{swish_adm_dir}/default.idx"
+
+        # Swish configuration file
     swish_cnf_file  "$self->{swish_adm_dir}/default.cnf"
 
 =item $sw-E<gt>index($dir)
@@ -352,7 +365,7 @@ hits, which can be asked for their path:
 
         # Search documents containing 
         # both "foo" and "bar"
-    for my $hit (@{$swish->search("foo AND bar")}) {
+    for my $hit ($swish->search("foo AND bar")) {
         print $hit->path(), "\n";
     }
 
@@ -366,7 +379,6 @@ Permanently delete the current index.
 
     * More than one index directory
     * Remove documents from index
-    * determine /usr/bin/perl line in streamer generally
     * Iterator for search hits
 
 =head1 LEGALESE

@@ -9,7 +9,7 @@ use strict;
 use Test::More qw(no_plan);
 use Sysadm::Install qw(:all);
 use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($DEBUG);
+#Log::Log4perl->easy_init($DEBUG);
 
 BEGIN { use_ok('SWISH::API::Common') };
 
