@@ -2,5 +2,7 @@
 Revision history for Perl extension SWISH::API::Common
 ######################################################################
 
+TODO: perl script.pl => $^X fails
+
 0.01  2005/06/28
       * Where it all began.

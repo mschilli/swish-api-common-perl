@@ -26,18 +26,19 @@ sub new {
     my($class, %options) = @_;
 
     my $self = {
-        swish_adm_dir  => "$ENV{HOME}/.swish-common",
-        swish_exe      => "swish-e",
+        swish_adm_dir             => "$ENV{HOME}/.swish-common",
+        swish_exe                 => "swish-e",
+        swish_fuzzy_indexing_mode => "Stemming_en",
         %options,
     };
 
     my $defaults = {
         swish_idx_file   => "$self->{swish_adm_dir}/default.idx",
         swish_cnf_file   => "$self->{swish_adm_dir}/default.cnf",
-        swish_fuzzy_indexing_mode => "Stemming_en",
         dirs_file        => "$self->{swish_adm_dir}/default.dirs",
         streamer         => "$self->{swish_adm_dir}/default.streamer",
         file_len_max     => 100_000,
+        atime_preserve   => 0,
     };
 
     for my $name (keys %$defaults) {
@@ -124,6 +125,12 @@ sub file_stream {
 ############################################
     my($self, $file) = @_;
 
+    my @saved;
+
+    if($self->{atime_preserve}) {
+        @saved = (stat($file))[8,9];
+    }
+
     if(! open FILE, "<$file") {
         WARN "Cannot open $file ($!)";
         return;
@@ -136,6 +143,10 @@ sub file_stream {
         return;
     }
     close FILE;
+
+    if($self->{atime_preserve}) {
+        utime(@saved, $file);
+    }
 
     my $size = length $data;
 
@@ -356,13 +367,16 @@ Available options and their defaults:
         # Swish configuration file
     swish_cnf_file  "$self->{swish_adm_dir}/default.cnf"
 
+        # SWISH Stemming
+    swish_fuzzy_indexing_mode => "Stemming_en"
+
         # Maximum amount of data (in bytes) extracted
         # from a single file
     file_len_max 100_000
 
-        # SWISH Stemming
-    swish_fuzzy_indexing_mode => "Stemming_en"
-
+        # Preserve every indexed file's atime
+    atime_preserve
+        
 =item $sw-E<gt>index($dir)
 
 Generate a new index of all text documents under directory C<$dir>.
