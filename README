@@ -17,7 +17,7 @@ SYNOPSIS
             # queries as you like:
 
             # Search documents containing both "swish" and "install"
-        for my $hit (@{$swish->search("swish AND install")}) {
+        for my $hit ($swish->search("swish AND install")) {
             print $hit->path(), "\n";
         }
 
@@ -30,7 +30,8 @@ DESCRIPTION
     TIME.
 
     Currently, "SWISH::API::Common" just allows for indexing documents in a
-    single directory and any of its subdirectories.
+    single directory and any of its subdirectories. Also, don't run index()
+    and search() in parallel yet.
 
 INSTALLATION
     "SWISH::API::Common" requires "SWISH::API" and the swish engine to be
@@ -44,7 +45,12 @@ INSTALLATION
         make
         make install
 
-    and then install SWISH::API and SWISH::API::Common.
+    and then install SWISH::API which is contained in the distribution:
+
+        cd perl
+        perl Makefile.PL
+        make 
+        make install
 
   METHODS
     $sw = SWISH::API::Common->new()
@@ -52,11 +58,28 @@ INSTALLATION
 
         Available options and their defaults:
 
+                # Where SWISH::API::Common stores index files etc.
             swish_adm_dir   "$ENV{HOME}/.swish-common"
+
+                # The path to swish-e, relative is OK
             swish_exe       "swish-e"
+
+                # Swish index file
             swish_idx_file  "$self->{swish_adm_dir}/default.idx"
+
+                # Swish configuration file
             swish_cnf_file  "$self->{swish_adm_dir}/default.cnf"
 
+                # SWISH Stemming
+            swish_fuzzy_indexing_mode => "Stemming_en"
+
+                # Maximum amount of data (in bytes) extracted
+                # from a single file
+            file_len_max 100_000
+
+                # Preserve every indexed file's atime
+            atime_preserve
+        
     $sw->index($dir)
         Generate a new index of all text documents under directory $dir.
 
@@ -66,7 +89,7 @@ INSTALLATION
 
                 # Search documents containing 
                 # both "foo" and "bar"
-            for my $hit (@{$swish->search("foo AND bar")}) {
+            for my $hit ($swish->search("foo AND bar")) {
                 print $hit->path(), "\n";
             }
 
@@ -76,7 +99,6 @@ INSTALLATION
 TODO List
         * More than one index directory
         * Remove documents from index
-        * determine /usr/bin/perl line in streamer generally
         * Iterator for search hits
 
 LEGALESE
