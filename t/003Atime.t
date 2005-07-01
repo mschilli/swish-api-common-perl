@@ -30,7 +30,7 @@ $sw->index("$CANNED/abc");
 
 my ($atime2, $mtime2) = (stat("$CANNED/abc"))[8,9];
 
-is($atime, $atime2, "atime unmodified by index");
-is($mtime, $mtime2, "mtime unmodified by index");
+ok($atime <= $atime2, "atime unmodified by index");
+ok($mtime <= $mtime2, "mtime unmodified by index");
 
 END { rmf "$CANNED/adm"; }
