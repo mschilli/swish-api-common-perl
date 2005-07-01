@@ -1,5 +1,5 @@
 ######################################################################
-    SWISH::API::Common 0.01
+    SWISH::API::Common 0.02
 ######################################################################
 
 NAME
@@ -80,8 +80,9 @@ INSTALLATION
                 # Preserve every indexed file's atime
             atime_preserve
         
-    $sw->index($dir)
-        Generate a new index of all text documents under directory $dir.
+    $sw->index($dir, ...)
+        Generate a new index of all text documents under directory $dir. One
+        or more directories can be specified.
 
     $sw->search("foo AND bar");
         Searches the index, using the given search expression. Returns a

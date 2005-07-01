@@ -9,7 +9,7 @@ package SWISH::API::Common;
 use strict;
 use warnings;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 use SWISH::API;
 use File::Path;
@@ -199,11 +199,11 @@ sub index_add {
 ############################################
 sub index {
 ############################################
-    my($self, $dir) = @_;
+    my($self, @dirs) = @_;
 
         # Make a new dirs file
     dir_prep($self->{dirs_file});
-    blurt $dir, $self->{dirs_file};
+    blurt join(',', @dirs), $self->{dirs_file};
 
         # Make a new swish conf file
     dir_prep($self->{swish_cnf_file});
@@ -215,8 +215,9 @@ EOT
 
         # Make a new streamer
     dir_prep($self->{streamer});
+    my $perl = perl_find();
     blurt <<EOT, $self->{streamer};
-#!$^X
+#!$perl
 use SWISH::API::Common;
 SWISH::API::Common->new(
         dirs_file    => '$self->{dirs_file}',
@@ -239,6 +240,23 @@ EOT
     DEBUG "$stdout";
 
     1;
+}
+
+###########################################
+sub perl_find {
+###########################################
+
+    if($^X =~ m#/#) {
+        return $^X;
+    }
+
+    for my $path (split /:/, $ENV{PATH}) {
+        if(-f File::Spec->catfile($path, $^X)) {
+                return File::Spec->catfile($path, $^X);
+        }
+    }
+
+    return undef;
 }
 
 ###########################################
@@ -377,9 +395,10 @@ Available options and their defaults:
         # Preserve every indexed file's atime
     atime_preserve
         
-=item $sw-E<gt>index($dir)
+=item $sw-E<gt>index($dir, ...)
 
-Generate a new index of all text documents under directory C<$dir>.
+Generate a new index of all text documents under directory C<$dir>. One
+ or more directories can be specified.
 
 =item $sw-E<gt>search("foo AND bar");
 

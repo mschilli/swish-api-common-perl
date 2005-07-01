@@ -2,7 +2,9 @@
 Revision history for Perl extension SWISH::API::Common
 ######################################################################
 
-TODO: perl script.pl => $^X fails
+0.02  2005/07/01
+    (ms) index() now accepts one or more directories
+    (ms) If $^X is relative, the absolute path with be determined
 
 0.01  2005/06/28
-      * Where it all began.
+    (ms) Where it all began.
