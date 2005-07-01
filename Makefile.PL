@@ -54,19 +54,20 @@ EOT
          require File::Copy;
          require LWP::Simple;
          my $dir = File::Temp::tempdir(CLEANUP => 1);
+         #print "*** Temporary directory: $dir\n";
          chdir $dir or die "Cannot chdir to $dir";
          my $distro = "swish-e-2.4.3.tar.gz";
          (my $distrodir = $distro) =~ s/\.tar.\gz$//g;
          print "Downloading $distro ...\n";
 #File::Copy::copy("/tmp/$distro", "$dir/$distro");
-         gestore("http://swish-e.org/distribution/$distro", $distro);
+         LWP::Simple::getstore(
+                 "http://swish-e.org/distribution/$distro", $distro);
          print "Done. Unpacking ...\n";
          system("tar zxf $distro");
          print "Done. Building ...\n";
-         system("cd $distrodir; ./configure; make; make install;");
+         system("cd $distrodir; ./configure; make; LD_LIBRARY_PATH=/usr/local/lib make install;");
          system("cd $distrodir; cd perl; " .
-                "LD_RUN_PATH=/usr/local/lib; export LD_RUN_PATH; " .
-                "perl Makefile.PL; make install");
+                "LD_LIBRARY_PATH=/usr/local/lib LD_RUN_PATH=/usr/local/lib perl Makefile.PL; make install");
          print "Done.\n";
              # Step out of 
          chdir "/";
