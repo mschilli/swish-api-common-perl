@@ -1,5 +1,8 @@
 Changes
 eg/canned/abc
+eg/canned/data1/abc
+eg/canned/data1/def
+eg/canned/data2/ghi
 eg/canned/def
 eg/idx_and_search.pl
 lib/SWISH/API/Common.pm
