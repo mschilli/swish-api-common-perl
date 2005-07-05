@@ -9,7 +9,9 @@ package SWISH::API::Common;
 use strict;
 use warnings;
 
-our $VERSION = "0.02";
+our $VERSION         = "0.03";
+our $SWISH_EXE       = "swish-e";
+our @SWISH_EXE_PATHS = qw(/usr/local/bin);
 
 use SWISH::API;
 use File::Path;
@@ -27,7 +29,7 @@ sub new {
 
     my $self = {
         swish_adm_dir             => "$ENV{HOME}/.swish-common",
-        swish_exe                 => "swish-e",
+        swish_exe                 => swish_find(),
         swish_fuzzy_indexing_mode => "Stemming_en",
         %options,
     };
@@ -46,6 +48,8 @@ sub new {
             $self->{$name} = $defaults->{$name};
         }
     }
+
+    LOGDIE "swish-e executable not found" unless -x $self->{swish_exe};
 
     bless $self, $class;
 }
@@ -250,9 +254,30 @@ sub perl_find {
         return $^X;
     }
 
+    return exe_find($^X);
+}
+
+###########################################
+sub swish_find {
+###########################################
+
+    for my $path (@SWISH_EXE_PATHS) {
+        if(-f File::Spec->catfile($path, $SWISH_EXE)) {
+                return File::Spec->catfile($path, $SWISH_EXE);
+        }
+    }
+
+    return exe_find($SWISH_EXE);
+}
+
+###########################################
+sub exe_find {
+###########################################
+    my($exe) = @_;
+
     for my $path (split /:/, $ENV{PATH}) {
-        if(-f File::Spec->catfile($path, $^X)) {
-                return File::Spec->catfile($path, $^X);
+        if(-f File::Spec->catfile($path, $exe)) {
+                return File::Spec->catfile($path, $exe);
         }
     }
 
