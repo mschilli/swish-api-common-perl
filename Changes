@@ -2,6 +2,9 @@
 Revision history for Perl extension SWISH::API::Common
 ######################################################################
 
+0.03  2005/07/01
+    (ms) Search swish-e in /usr/local/bin and other PATHs.
+
 0.02  2005/07/01
     (ms) index() now accepts one or more directories
     (ms) If $^X is relative, the absolute path with be determined
