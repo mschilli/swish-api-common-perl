@@ -9,7 +9,6 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml			Module meta-data (added by MakeMaker)
 README
-SWISH-API-Common-0.02.tar.gz
 t/001Basic.t
 t/002Merge.t
 t/003Atime.t
