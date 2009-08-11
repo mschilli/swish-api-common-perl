@@ -57,7 +57,7 @@ EOT
          #print "*** Temporary directory: $dir\n";
          chdir $dir or die "Cannot chdir to $dir";
          my $distro = "swish-e-2.4.3.tar.gz";
-         (my $distrodir = $distro) =~ s/\.tar.\gz$//g;
+         (my $distrodir = $distro) =~ s/\.tar\.gz$//g;
          print "Downloading $distro ...\n";
 #File::Copy::copy("/tmp/$distro", "$dir/$distro");
          LWP::Simple::getstore(

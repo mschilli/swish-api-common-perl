@@ -2,6 +2,10 @@
 Revision history for Perl extension SWISH::API::Common
 ######################################################################
 
+0.04  2009/08/10
+    (ms) [RT 48597] Fixed regex typo in Makefile.PL, reported by
+         Przemek Czerkas.
+
 0.03  2005/07/01
     (ms) Search swish-e in /usr/local/bin and other PATHs.
 

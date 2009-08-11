@@ -9,7 +9,7 @@ package SWISH::API::Common;
 use strict;
 use warnings;
 
-our $VERSION         = "0.03";
+our $VERSION         = "0.04";
 our $SWISH_EXE       = "swish-e";
 our @SWISH_EXE_PATHS = qw(/usr/local/bin);
 
