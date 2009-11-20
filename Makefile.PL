@@ -3,6 +3,15 @@
 # 2005, Mike Schilli <cpan@perlmeister.com>
 ######################################################################
 use ExtUtils::MakeMaker;
+
+my $meta_merge = {
+    META_MERGE => {
+        resources => {
+            repository  => 'http://github.com/mschilli/swish-api-common-perl',
+        },
+    }
+};
+
 WriteMakefile(
     'NAME'         => 'SWISH::API::Common',
     'VERSION_FROM' => 'lib/SWISH/API/Common.pm', # finds $VERSION
@@ -17,6 +26,7 @@ WriteMakefile(
                         File::Copy      => 0,
                         LWP::Simple     => 0,
                       }, # e.g., Module::Name => 1.1
+    $ExtUtils::MakeMaker::VERSION >= 6.50 ? (%$meta_merge) : (),
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/SWISH/API/Common.pm',
        AUTHOR     => 'Mike Schilli <cpan@perlmeister.com>') : ()),

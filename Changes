@@ -2,6 +2,9 @@
 Revision history for Perl extension SWISH::API::Common
 ######################################################################
 
+0.05  (not yet released)
+    (ms) Added github repository link to Makefile.PL
+
 0.04  2009/08/10
     (ms) [RT 48597] Fixed regex typo in Makefile.PL, reported by
          Przemek Czerkas.
